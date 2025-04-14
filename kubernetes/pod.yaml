@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: fibonacci-test-pod
+  labels:
+    app: fibonacci-app
+spec:
+  containers:
+  - name: fibonacci-container
+    image: execorn/fibonacci-app:latest
+
+    ports:
+    - containerPort: 8080
+    envFrom:
+    - configMapRef:
+        name: fibonacci-app-config
+    volumeMounts:
+    - name: log-volume
+      mountPath: /app/logs
+  volumes:
+  - name: log-volume
+    emptyDir: {}

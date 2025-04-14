@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: fibonacci-service # Имя, по которому другие поды смогут обращаться к приложению
+spec:
+  type: ClusterIP # Доступен только внутри кластера
+  selector:
+    app: fibonacci-app # Направляет трафик на поды с этой меткой (созданные Deployment'ом)
+  ports:
+  - protocol: TCP
+    port: 80 # Порт, который будет "слушать" Service внутри кластера
+    targetPort: 8080 # Порт контейнера (containerPort), на который перенаправляется трафик

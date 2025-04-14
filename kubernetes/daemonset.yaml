@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: log-agent-daemonset
+  labels:
+    app: log-agent
+spec:
+  selector:
+    matchLabels:
+      app: log-agent # Должен совпадать с template.metadata.labels
+  template:
+    metadata:
+      labels:
+        app: log-agent
+    spec:
+      containers:
+      - name: log-reader
+        image: busybox:latest # Простой образ с утилитой tail
+        command: [ "/bin/sh", "-c" ]
+        args:
+        - |
+          # Ждем появления файла и начинаем его читать
+          LOGFILE=/mnt/host-logs/app.log
+          echo "Log agent started on node $(NODE_NAME). Waiting for $LOGFILE..."
+          while [ ! -f $LOGFILE ]; do sleep 2; done
+          echo "Found $LOGFILE, starting tail..."
+          tail -n+1 -F $LOGFILE # -F следит за пересозданием файла
+        env:
+        - name: NODE_NAME # Передаем имя узла в контейнер для информативности
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        volumeMounts:
+        - name: host-log-dir
+          mountPath: /mnt/host-logs # Куда монтируем директорию с логами хоста
+          readOnly: true # Агенту достаточно прав на чтение
+      volumes:
+      - name: host-log-dir
+        hostPath:
+          path: /var/log/fibonacci-app-logs # Та же директория на хосте, что и в Deployment
+          type: DirectoryOrCreate # Должен совпадать с Deployment
+      terminationGracePeriodSeconds: 30 # Даем время агенту завершиться

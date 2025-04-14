@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fibonacci-deployment
+  labels:
+    app: fibonacci-app
+spec:
+
+  replicas: 3
+  selector:
+    matchLabels:
+      app: fibonacci-app
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: fibonacci-app
+
+      annotations:
+
+        configmap-version: "v1"
+
+    spec:
+      containers:
+      - name: fibonacci-container
+
+        image: <your-dockerhub-username>/fibonacci-app:latest
+
+        ports:
+        - containerPort: 8080
+
+        envFrom:
+        - configMapRef:
+            name: fibonacci-app-config
+        volumeMounts:
+
+        - name: log-volume
+          mountPath: /app/logs
+      volumes:
+
+      - name: log-volume
+        hostPath:
+
+          path: /var/log/fibonacci-app-logs
+          type: DirectoryOrCreate

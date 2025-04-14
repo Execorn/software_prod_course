@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: fibonacci-app-config
+data:
+  APP_PORT: "8080"
+  LOG_LEVEL: "INFO" # Возможные значения: DEBUG, INFO, WARNING, ERROR, CRITICAL
+  # Путь внутри контейнера, куда будет монтироваться том для логов
+  LOG_FILE_PATH: "/app/logs/app.log"
+  WELCOME_MESSAGE: "Welcome from Kubernetes ConfigMap!"

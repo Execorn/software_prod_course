@@ -1,0 +1,43 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: fibonacci-log-archiver
+spec:
+  schedule: "*/10 * * * *"
+  jobTemplate:
+
+    spec:
+      template:
+
+        spec:
+          containers:
+          - name: log-archiver-container
+            image: alpine/curl
+
+            args:
+            - /bin/sh
+            - -c
+            - |
+              echo "Starting log archival process..."
+              TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+              LOG_URL="http://fibonacci-service/logs" 
+              OUTPUT_FILE="/tmp/app-logs-dump-${TIMESTAMP}.log"
+              ARCHIVE_FILE="/tmp/app-logs-archive-${TIMESTAMP}.tar.gz"
+
+              echo "Fetching logs from ${LOG_URL}..."
+
+              curl -sS --fail "${LOG_URL}" -o "${OUTPUT_FILE}" 
+
+              if [ $? -eq 0 ]; then
+                echo "Logs successfully fetched to ${OUTPUT_FILE}"
+                
+                echo "NOTE: Archiving step (tar) is commented out. Logs saved to ${OUTPUT_FILE}."
+              else
+                echo "ERROR: Failed to fetch logs from ${LOG_URL}"
+              fi
+              echo "Log archival process finished."
+
+          restartPolicy: OnFailure
+          terminationGracePeriodSeconds: 30
+      backoffLimit: 1
+      ttlSecondsAfterFinished: 300
