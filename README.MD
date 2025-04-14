@@ -1,4 +1,5 @@
-# Fibonacci Kubernetes Deployment Example
+# Бирюков Никита. Б05-132. ДЗ 1.
+## Fibonacci App
 
 ## 1. Обзор
 
