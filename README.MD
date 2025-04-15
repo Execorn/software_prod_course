@@ -74,13 +74,12 @@
 **Шаг 1: Сборка Docker-образа**
 
 1.  Перейдите в корневую директорию проекта.
-2.  Выполните команду сборки Docker-образа. **Важно:** Замените `<your-dockerhub-username>` на ваш реальный логин в Docker Hub или на полный адрес вашего приватного/корпоративного реестра.
     ```bash
     docker build -t <your-dockerhub-username>/fibonacci-app:latest .
     ```
-    *Пример:* `docker build -t johndoe/fibonacci-app:latest .`
+    *Пример:* `docker build -t execorn/fibonacci-app:latest .`
 
-3.  **(Опционально) Публикация образа в реестр:** Если ваш Kubernetes-кластер не имеет прямого доступа к локальным образам Docker (например, это облачный кластер), вам нужно опубликовать (push) собранный образ в реестр:
+2.  **(Опционально) Публикация образа в реестр:** Если ваш Kubernetes-кластер не имеет прямого доступа к локальным образам Docker (например, это облачный кластер), вам нужно опубликовать (push) собранный образ в реестр:
     ```bash
     # Войдите в ваш реестр (если требуется)
     # docker login [your-registry.com]
@@ -105,10 +104,8 @@
     ```bash
     # В файле deploy.sh найдите и измените эту строку:
     DOCKER_IMAGE_NAME="${DOCKER_USERNAME:-your-dockerhub-username}/fibonacci-app:latest"
-    # Замените your-dockerhub-username/fibonacci-app:latest на ваше имя образа, например:
-    # DOCKER_IMAGE_NAME="johndoe/fibonacci-app:latest"
-    # Или установите переменную окружения DOCKER_USERNAME перед запуском:
-    # export DOCKER_USERNAME="johndoe"
+    # установите переменную окружения DOCKER_USERNAME перед запуском:
+    # export DOCKER_USERNAME="execorn"
     # ./deploy.sh
     ```
 
@@ -303,16 +300,3 @@ kubectl delete configmap fibonacci-app-config --ignore-not-found=true
 # kubectl delete jobs -l job-name=fibonacci-log-archiver-* --ignore-not-found=true
 
 echo "Очистка завершена."
-IGNORE_WHEN_COPYING_START
-content_copy
-download
-Use code with caution.
-IGNORE_WHEN_COPYING_END
-
-Примечание: Если вы использовали hostPath, файлы логов (/var/log/fibonacci-app-logs/app.log) могут остаться на узлах вашего кластера. Их нужно будет удалить вручную при необходимости.
-
-IGNORE_WHEN_COPYING_START
-content_copy
-download
-Use code with caution.
-IGNORE_WHEN_COPYING_END
